@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1061928926363",
+    "project_id": "baatyein-d9e98",
+    "storage_bucket": "baatyein-d9e98.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1061928926363:android:f7b308c8acb78e71549a3e",
+        "android_client_info": {
+          "package_name": "com.baatein.baatein"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHarPOoCgE894kgmUZNtHVXLUDAKU-eUY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
