@@ -1,4 +1,4 @@
-import 'package:baatein/presentation/pages/home_screen.dart';
+import 'package:baatein/presentation/screens/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -82,18 +82,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 behavior: SnackBarBehavior.floating,
               ),
             );
-          } else if (state is AuthAuthenticated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Account created successfully!'),
-                backgroundColor: Colors.green,
-                behavior: SnackBarBehavior.floating,
-              ),
-            );
-            // Navigate to home screen
+          } else if (state is AuthNeedsProfileSetup) {
+            // Navigate to profile setup screen
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (_) => const HomeScreen()),
+              MaterialPageRoute(builder: (_) => const ProfileSetupScreen()),
             );
           }
         },

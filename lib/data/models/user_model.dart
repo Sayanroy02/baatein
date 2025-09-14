@@ -1,104 +1,171 @@
-import 'package:equatable/equatable.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:equatable/equatable.dart';
 
 class UserModel extends Equatable {
   final String uid;
   final String email;
-  final String displayName;
-  final String? username;
-  final String? profileImageUrl;
+  final String name;
+  final String username;
+  final String? phone;
   final String? description;
-  final String? publicKey;
-  final String? privateKey;
+  final String? profileImageBase64;
+  final String? profileImageName;
+  final bool hasProfileImage;
+  final bool isProfileComplete;
+  final String? platform;
+  final DateTime? createdAt;
+  final DateTime? lastSeen;
   final bool isOnline;
-  final DateTime lastSeen;
-  final DateTime createdAt;
 
   const UserModel({
     required this.uid,
     required this.email,
-    required this.displayName,
-    this.username,
-    this.profileImageUrl,
+    required this.name,
+    required this.username,
+    this.phone,
     this.description,
-    this.publicKey,
-    this.privateKey,
-    required this.isOnline,
-    required this.lastSeen,
-    required this.createdAt,
+    this.profileImageBase64,
+    this.profileImageName,
+    this.hasProfileImage = false,
+    this.isProfileComplete = false,
+    this.platform,
+    this.createdAt,
+    this.lastSeen,
+    this.isOnline = false,
   });
 
+  // Create UserModel from Firestore document
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
     return UserModel(
       uid: doc.id,
       email: data['email'] ?? '',
-      displayName: data['displayName'] ?? '',
-      username: data['username'],
-      profileImageUrl: data['profileImageUrl'],
+      name: data['name'] ?? '',
+      username: data['username'] ?? '',
+      phone: data['phone'],
       description: data['description'],
-      publicKey: data['publicKey'],
-      privateKey: data['privateKey'],
+      profileImageBase64: data['profileImageBase64'],
+      profileImageName: data['profileImageName'],
+      hasProfileImage: data['hasProfileImage'] ?? false,
+      isProfileComplete: data['isProfileComplete'] ?? false,
+      platform: data['platform'],
+      createdAt: data['createdAt']?.toDate(),
+      lastSeen: data['lastSeen']?.toDate(),
       isOnline: data['isOnline'] ?? false,
-      lastSeen: (data['lastSeen'] as Timestamp).toDate(),
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
     );
   }
 
-  Map<String, dynamic> toFirestore() {
+  // Create UserModel from Map
+  factory UserModel.fromMap(Map<String, dynamic> data) {
+    return UserModel(
+      uid: data['uid'] ?? '',
+      email: data['email'] ?? '',
+      name: data['name'] ?? '',
+      username: data['username'] ?? '',
+      phone: data['phone'],
+      description: data['description'],
+      profileImageBase64: data['profileImageBase64'],
+      profileImageName: data['profileImageName'],
+      hasProfileImage: data['hasProfileImage'] ?? false,
+      isProfileComplete: data['isProfileComplete'] ?? false,
+      platform: data['platform'],
+      createdAt: data['createdAt']?.toDate(),
+      lastSeen: data['lastSeen']?.toDate(),
+      isOnline: data['isOnline'] ?? false,
+    );
+  }
+
+  // Convert UserModel to Map for Firestore
+  Map<String, dynamic> toMap() {
     return {
+      'uid': uid,
       'email': email,
-      'displayName': displayName,
+      'name': name,
       'username': username,
-      'profileImageUrl': profileImageUrl,
+      'phone': phone,
       'description': description,
-      'publicKey': publicKey,
+      'profileImageBase64': profileImageBase64,
+      'profileImageName': profileImageName,
+      'hasProfileImage': hasProfileImage,
+      'isProfileComplete': isProfileComplete,
+      'platform': platform,
+      'createdAt': createdAt != null ? Timestamp.fromDate(createdAt!) : null,
+      'lastSeen': lastSeen != null ? Timestamp.fromDate(lastSeen!) : null,
       'isOnline': isOnline,
-      'lastSeen': Timestamp.fromDate(lastSeen),
-      'createdAt': Timestamp.fromDate(createdAt),
     };
   }
 
+  // Create a copy with updated fields
   UserModel copyWith({
     String? uid,
     String? email,
-    String? displayName,
+    String? name,
     String? username,
-    String? profileImageUrl,
+    String? phone,
     String? description,
-    String? publicKey,
-    String? privateKey,
-    bool? isOnline,
-    DateTime? lastSeen,
+    String? profileImageBase64,
+    String? profileImageName,
+    bool? hasProfileImage,
+    bool? isProfileComplete,
+    String? platform,
     DateTime? createdAt,
+    DateTime? lastSeen,
+    bool? isOnline,
   }) {
     return UserModel(
       uid: uid ?? this.uid,
       email: email ?? this.email,
-      displayName: displayName ?? this.displayName,
+      name: name ?? this.name,
       username: username ?? this.username,
-      profileImageUrl: profileImageUrl ?? this.profileImageUrl,
+      phone: phone ?? this.phone,
       description: description ?? this.description,
-      publicKey: publicKey ?? this.publicKey,
-      privateKey: privateKey ?? this.privateKey,
-      isOnline: isOnline ?? this.isOnline,
-      lastSeen: lastSeen ?? this.lastSeen,
+      profileImageBase64: profileImageBase64 ?? this.profileImageBase64,
+      profileImageName: profileImageName ?? this.profileImageName,
+      hasProfileImage: hasProfileImage ?? this.hasProfileImage,
+      isProfileComplete: isProfileComplete ?? this.isProfileComplete,
+      platform: platform ?? this.platform,
       createdAt: createdAt ?? this.createdAt,
+      lastSeen: lastSeen ?? this.lastSeen,
+      isOnline: isOnline ?? this.isOnline,
     );
+  }
+
+  // Get display name (prefer name, fallback to username)
+  String get displayName => name.isNotEmpty ? name : username;
+
+  // Get initials for avatar
+  String get initials {
+    if (name.isEmpty)
+      return username.isNotEmpty ? username[0].toUpperCase() : '?';
+
+    final names = name.split(' ');
+    if (names.length >= 2) {
+      return '${names[0][0]}${names[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
   }
 
   @override
   List<Object?> get props => [
     uid,
     email,
-    displayName,
+    name,
     username,
-    profileImageUrl,
+    phone,
     description,
-    publicKey,
-    privateKey,
-    isOnline,
-    lastSeen,
+    profileImageBase64,
+    profileImageName,
+    hasProfileImage,
+    isProfileComplete,
+    platform,
     createdAt,
+    lastSeen,
+    isOnline,
   ];
+
+  @override
+  String toString() {
+    return 'UserModel(uid: $uid, name: $name, username: $username, email: $email)';
+  }
 }

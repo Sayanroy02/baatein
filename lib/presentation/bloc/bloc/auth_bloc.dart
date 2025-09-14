@@ -10,6 +10,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc({required this.authRepository}) : super(AuthUnauthenticated()) {
     on<signUpRequest>(_onSignUpRequest);
+    on<ProfileSetupCompleted>(_onProfileSetupCompleted);
   }
 
   Future<void> _onSignUpRequest(
@@ -25,7 +26,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       if (user != null) {
-        emit(AuthAuthenticated(userId: user.uid));
+        // New users need to set up their profile
+        emit(AuthNeedsProfileSetup(userId: user.uid));
       } else {
         emit(
           const AuthError(message: 'Registration failed. Please try again.'),
@@ -33,6 +35,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     } catch (e) {
       emit(AuthError(message: e.toString().replaceAll('Exception: ', '')));
+    }
+  }
+
+  Future<void> _onProfileSetupCompleted(
+    ProfileSetupCompleted event,
+    Emitter<AuthState> emit,
+  ) async {
+    final user = authRepository.currentUser;
+    if (user != null) {
+      emit(AuthAuthenticated(userId: user.uid));
     }
   }
 }

@@ -1,7 +1,8 @@
-import 'package:baatein/data/repositories/auth_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../bloc/bloc/auth_bloc.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -9,7 +10,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    final userData = AuthRepository().currentUser;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -70,13 +71,18 @@ class HomeScreen extends StatelessWidget {
                   children: [
                     Row(
                       children: [
-                        Icon(Icons.waving_hand, size: 28),
+                        Icon(
+                          Icons.waving_hand,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: 28,
+                        ),
                         const SizedBox(width: 8),
                         Text(
-                          'Welcome! ',
+                          'Welcome!',
                           style: GoogleFonts.inter(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -235,7 +241,11 @@ class HomeScreen extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, size: 24),
+                child: Icon(
+                  icon,
+                  color: Theme.of(context).colorScheme.primary,
+                  size: 24,
+                ),
               ),
               const SizedBox(width: 16),
               Expanded(

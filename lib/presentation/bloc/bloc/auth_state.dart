@@ -4,7 +4,7 @@ sealed class AuthState extends Equatable {
   const AuthState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 final class AuthInitial extends AuthState {}
@@ -19,13 +19,23 @@ class AuthUnauthenticated extends AuthState {
   List<Object> get props => [];
 }
 
-class AuthAuthenticated extends AuthState {
+class AuthNeedsProfileSetup extends AuthState {
   final String userId;
 
-  const AuthAuthenticated({required this.userId});
+  const AuthNeedsProfileSetup({required this.userId});
 
   @override
   List<Object> get props => [userId];
+}
+
+class AuthAuthenticated extends AuthState {
+  final String userId;
+  final UserModel user;
+
+  const AuthAuthenticated({required this.userId, required this.user});
+
+  @override
+  List<Object> get props => [userId, user];
 }
 
 class AuthError extends AuthState {
@@ -35,4 +45,11 @@ class AuthError extends AuthState {
 
   @override
   List<Object> get props => [message];
+}
+
+class AuthPasswordResetSent extends AuthState {
+  const AuthPasswordResetSent();
+
+  @override
+  List<Object> get props => [];
 }
